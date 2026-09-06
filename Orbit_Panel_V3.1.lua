@@ -27,7 +27,7 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 local State = {
     Feature = "Main", Orbit = false, OrbitTarget = nil, OrbitSpeed = 5, OrbitRadius = 8, OrbitAngle = 0,
-    AutoPunch = false, PunchInterval = .25, ESP = false, HealthESP = false,
+    AutoPunch = false, PunchInterval = .25, PunchAura = false, PunchAuraRange = 15, ESP = false, HealthESP = false,
     TargetLock = false, LockedTarget = nil, ShowChat = false,
     Transparency = .08, Outline = true,
     Accent = Color3.fromRGB(150,90,255), OutlineColor = Color3.fromRGB(185,130,255)
@@ -58,7 +58,7 @@ local function EquippedTool()
 end
 
 local Gui=New("ScreenGui",{Name="OrbitPanelV31",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},PlayerGui)
-local Main=New("Frame",{Name="MainWindow",Size=UDim2.fromOffset(760,470),Position=UDim2.new(.5,-380,.5,-235),BackgroundColor3=Color3.fromRGB(16,12,27),BackgroundTransparency=State.Transparency,BorderSizePixel=0,ClipsDescendants=true},Gui)
+local Main=New("Frame",{Name="MainWindow",Size=UDim2.fromOffset(420,285),Position=UDim2.new(.5,-210,.5,-142),BackgroundColor3=Color3.fromRGB(16,12,27),BackgroundTransparency=State.Transparency,BorderSizePixel=0,ClipsDescendants=true},Gui)
 Corner(Main,14);local MainStroke=Stroke(Main,State.OutlineColor,1.5)
 for i=1,80 do local s=math.random(1,3);local star=New("Frame",{Size=UDim2.fromOffset(s,s),Position=UDim2.new(math.random(),0,math.random(),0),BackgroundColor3=Color3.fromRGB(220,210,255),BackgroundTransparency=math.random(35,80)/100,BorderSizePixel=0,ZIndex=0},Main);Corner(star,s) end
 local Top=New("Frame",{Size=UDim2.new(1,0,0,48),BackgroundColor3=Color3.fromRGB(25,19,40),BorderSizePixel=0,ZIndex=5},Main)
@@ -116,7 +116,16 @@ local function OrbitPage()
     ContentTitle.Text="🌀 Orbit";Clear();Label("Orbit around the selected player. Speed and Radius are direct controls.",45);Label("Orbit Speed",28);Number(State.OrbitSpeed,function(v)State.OrbitSpeed=math.clamp(v,.1,30)end);Label("Change how quickly you orbit around a player.",30);Label("Orbit Radius",28);Number(State.OrbitRadius,function(v)State.OrbitRadius=math.clamp(v,1,100)end);Label("Change how far away you orbit around a player.",30);Toggle("🌀 Orbit",State.Orbit,function(v)State.Orbit=v;if v and not State.OrbitTarget then State.OrbitTarget=Nearest()end end);Button("🎯 Select Nearest Target",function()State.OrbitTarget=Nearest();OrbitPage()end);Label("Target: "..(State.OrbitTarget and State.OrbitTarget.DisplayName or "None"),35);Label("Auto-stop: orbit stops when WalkSpeed reaches 22+.",42)
 end
 local function CombatPage()
-    ContentTitle.Text="👊 Combat";Clear();Label("Combat controls for testing your own fighting-game mechanics.",45);Toggle("👊 Auto Punch",State.AutoPunch,function(v)State.AutoPunch=v end);Label("Attack interval",28);Number(State.PunchInterval,function(v)State.PunchInterval=math.clamp(v,.05,5)end);Label("Uses the Tool currently equipped by your character and checks a 15-stud nearest-player range.",50)
+    ContentTitle.Text="👊 Combat";Clear();Label("Combat controls for testing your own fighting-game mechanics.",45)
+    Toggle("👊 Auto Punch",State.AutoPunch,function(v)State.AutoPunch=v end)
+    Label("Attack interval",28)
+    Number(State.PunchInterval,function(v)State.PunchInterval=math.clamp(v,.05,5)end)
+    Label("Uses the Tool currently equipped by your character.",38)
+    Toggle("🥊 Punch Aura",State.PunchAura,function(v)State.PunchAura=v end)
+    Label("Change the server-validated attack range of your first Tool. This is for your own game's combat system; it does not edit other players' character hitboxes locally.",58)
+    Label("Punch Aura Range",28)
+    Number(State.PunchAuraRange,function(v)State.PunchAuraRange=math.clamp(v,1,100)end)
+    Label("Set how far the first Tool's attack can reach in your own experience.",40)
 end
 local function ESPPage()
     ContentTitle.Text="👁️ ESP";Clear();Label("Visual player information. Health display is separate from the regular highlight.",45);Toggle("👁️ Player ESP",State.ESP,function(v)State.ESP=v;RefreshESP()end);Label("Highlights other players.",28);Toggle("❤️ Show Health",State.HealthESP,function(v)State.HealthESP=v;RefreshESP()end);Label("Shows current HP / Max HP above players and updates as health changes.",45)
@@ -155,11 +164,11 @@ Draggable(Top,Main)
 local Resize=New("TextButton",{Size=UDim2.fromOffset(25,25),Position=UDim2.new(1,-27,1,-27),BackgroundTransparency=1,Text="↘",TextColor3=Color3.fromRGB(180,160,210),TextSize=16,ZIndex=20},Main)
 local resizing=false,rstart,rsize
 Resize.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then resizing=true;rstart=i.Position;rsize=Main.AbsoluteSize end end)
-UserInputService.InputChanged:Connect(function(i)if resizing and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then local d=i.Position-rstart;Main.Size=UDim2.fromOffset(math.clamp(rsize.X+d.X,560,1000),math.clamp(rsize.Y+d.Y,360,720))end end)
+UserInputService.InputChanged:Connect(function(i)if resizing and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then local d=i.Position-rstart;Main.Size=UDim2.fromOffset(math.clamp(rsize.X+d.X,360,760),math.clamp(rsize.Y+d.Y,240,520))end end)
 UserInputService.InputEnded:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then resizing=false end end)
 
 local Galaxy=New("TextButton",{Name="GalaxyReopen",Size=UDim2.fromOffset(58,58),Position=UDim2.new(0,25,.5,-29),BackgroundColor3=Color3.fromRGB(28,20,45),Text="🌌",TextSize=29,BorderSizePixel=0,Visible=false,ZIndex=100},Gui);Corner(Galaxy,29);Stroke(Galaxy,State.OutlineColor,1.5);Draggable(Galaxy,Galaxy)
-Galaxy.MouseButton1Click:Connect(function()Galaxy.Visible=false;Main.Visible=true;Main.Size=UDim2.fromOffset(300,180);Tween(Main,.3,{Size=UDim2.fromOffset(760,470)})end)
+Galaxy.MouseButton1Click:Connect(function()Galaxy.Visible=false;Main.Visible=true;Main.Size=UDim2.fromOffset(300,180);Tween(Main,.3,{Size=UDim2.fromOffset(420,285)})end)
 Min.MouseButton1Click:Connect(function()Main.Visible=false;Galaxy.Visible=true end)
 Close.MouseButton1Click:Connect(function()for p in pairs(ESPObjects) do RemoveESP(p) end;Gui:Destroy()end)
 
@@ -176,7 +185,26 @@ end)
 
 -- Auto Punch: uses the equipped Tool in the user's own experience.
 task.spawn(function()while Gui.Parent do if State.AutoPunch then local tool,target=EquippedTool(),Nearest();if tool and target and Dist(target)<=15 then pcall(function()tool:Activate()end)end;task.wait(State.PunchInterval)else task.wait(.1)end end end)
+
+-- Punch Aura bridge for the user's own game.
+-- Create ReplicatedStorage.OrbitPunchAura (RemoteEvent) and validate the
+-- requested range/server-side before applying damage or hit detection.
+task.spawn(function()
+    local ReplicatedStorage=game:GetService("ReplicatedStorage")
+    while Gui.Parent do
+        if State.PunchAura then
+            local remote=ReplicatedStorage:FindFirstChild("OrbitPunchAura")
+            local tool=EquippedTool()
+            if remote and remote:IsA("RemoteEvent") and tool then
+                pcall(function() remote:FireServer(tool, State.PunchAuraRange) end)
+            end
+            task.wait(math.max(State.PunchInterval, .1))
+        else
+            task.wait(.1)
+        end
+    end
+end)
 -- Health labels refresh.
 task.spawn(function()while Gui.Parent do if State.ESP or State.HealthESP then RefreshESP() end;task.wait(.25)end end)
 
-Main.Size=UDim2.fromOffset(300,180);Main.BackgroundTransparency=1;task.wait(.15);Tween(Main,.45,{Size=UDim2.fromOffset(760,470),BackgroundTransparency=State.Transparency});Select("📌 Main")
+Main.Size=UDim2.fromOffset(300,180);Main.BackgroundTransparency=1;task.wait(.15);Tween(Main,.45,{Size=UDim2.fromOffset(420,285),BackgroundTransparency=State.Transparency});Select("📌 Main")
