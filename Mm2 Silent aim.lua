@@ -39,7 +39,7 @@ local CONFIG = {
     HitboxMultiplier = 2.0,
     MaxHitboxSize = 50,
     GunPickupRange = 200,
-    UI_SCALE = 1.0,
+    UI_SCALE = 0.85,
 }
 
 -- ============================================================
@@ -370,17 +370,21 @@ local function hitboxLoop()
 end
 
 -- ============================================================
--- UI (AURA FARMING + COOL FONT)
+-- UI (AURA FARMING + COOL FONT) – LANDSCAPE FIX + SPEED INPUT
 -- ============================================================
 local UI_SCALE = CONFIG.UI_SCALE
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MM2DominatorUI"
 screenGui.Parent = player:WaitForChild("PlayerGui")
 screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
 
+-- ============================================================
+-- AURA FRAME (Positioned top-left for landscape)
+-- ============================================================
 local auraFrame = Instance.new("Frame")
-auraFrame.Size = UDim2.new(0, 360 * UI_SCALE, 0, 500 * UI_SCALE)
-auraFrame.Position = UDim2.new(0.5, -180 * UI_SCALE, 0.5, -250 * UI_SCALE)
+auraFrame.Size = UDim2.new(0, 340 * UI_SCALE, 0, 460 * UI_SCALE)
+auraFrame.Position = UDim2.new(0, 10, 0, 10)
 auraFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 15)
 auraFrame.BorderSizePixel = 0
 auraFrame.ClipsDescendants = true
@@ -422,8 +426,11 @@ runService.Heartbeat:Connect(function(dt)
     )
 end)
 
+-- ============================================================
+-- HEADER
+-- ============================================================
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 45 * UI_SCALE)
+header.Size = UDim2.new(1, 0, 0, 40 * UI_SCALE)
 header.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
 header.BackgroundTransparency = 0.3
 header.BorderSizePixel = 0
@@ -434,8 +441,8 @@ headerCorner.CornerRadius = UDim.new(0, 22 * UI_SCALE)
 headerCorner.Parent = header
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -100 * UI_SCALE, 1, 0)
-title.Position = UDim2.new(0, 15 * UI_SCALE, 0, 0)
+title.Size = UDim2.new(1, -95 * UI_SCALE, 1, 0)
+title.Position = UDim2.new(0, 12 * UI_SCALE, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "⚡ MM2 DOMINATOR ⚡"
 title.TextColor3 = Color3.fromRGB(255, 215, 100)
@@ -462,8 +469,8 @@ end)
 
 local function createButton(text, color, xOffset)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 30 * UI_SCALE, 0, 30 * UI_SCALE)
-    btn.Position = UDim2.new(1, xOffset * UI_SCALE, 0, 8 * UI_SCALE)
+    btn.Size = UDim2.new(0, 28 * UI_SCALE, 0, 28 * UI_SCALE)
+    btn.Position = UDim2.new(1, xOffset * UI_SCALE, 0, 6 * UI_SCALE)
     btn.BackgroundColor3 = color
     btn.BackgroundTransparency = 0.15
     btn.BorderSizePixel = 0
@@ -483,13 +490,16 @@ local function createButton(text, color, xOffset)
     return btn
 end
 
-local minimizeBtn = createButton("−", Color3.fromRGB(255, 180, 50), -75)
-local closeBtn = createButton("✕", Color3.fromRGB(200, 50, 50), -40)
-local deleteBtn = createButton("⌫", Color3.fromRGB(100, 100, 100), -110)
+local minimizeBtn = createButton("−", Color3.fromRGB(255, 180, 50), -100)
+local closeBtn = createButton("✕", Color3.fromRGB(200, 50, 50), -68)
+local deleteBtn = createButton("⌫", Color3.fromRGB(100, 100, 100), -36)
 
+-- ============================================================
+-- FEATURE LIST
+-- ============================================================
 local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(1, -20 * UI_SCALE, 1, -60 * UI_SCALE)
-scrollFrame.Position = UDim2.new(0, 10 * UI_SCALE, 0, 50 * UI_SCALE)
+scrollFrame.Size = UDim2.new(1, -14 * UI_SCALE, 1, -55 * UI_SCALE)
+scrollFrame.Position = UDim2.new(0, 7 * UI_SCALE, 0, 45 * UI_SCALE)
 scrollFrame.BackgroundTransparency = 1
 scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 scrollFrame.ScrollBarThickness = 4 * UI_SCALE
@@ -511,7 +521,7 @@ local featureList = {
 
 for _, featureName in ipairs(featureList) do
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, 0, 0, 38 * UI_SCALE)
+    row.Size = UDim2.new(1, 0, 0, 36 * UI_SCALE)
     row.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
     row.BackgroundTransparency = 0.25
     row.BorderSizePixel = 0
@@ -536,7 +546,7 @@ for _, featureName in ipairs(featureList) do
     label.Parent = row
     local toggle = Instance.new("TextButton")
     toggle.Size = UDim2.new(0, 42 * UI_SCALE, 0, 24 * UI_SCALE)
-    toggle.Position = UDim2.new(1, -52 * UI_SCALE, 0, 7 * UI_SCALE)
+    toggle.Position = UDim2.new(1, -52 * UI_SCALE, 0, 6 * UI_SCALE)
     toggle.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
     toggle.BorderSizePixel = 0
     toggle.Text = ""
@@ -571,10 +581,73 @@ for _, featureName in ipairs(featureList) do
     toggle.TouchTap:Connect(function() isOn = not isOn updateToggle() end)
 end
 
+-- ============================================================
+-- SPEED INPUT ROW
+-- ============================================================
+local speedRow = Instance.new("Frame")
+speedRow.Size = UDim2.new(1, 0, 0, 40 * UI_SCALE)
+speedRow.BackgroundColor3 = Color3.fromRGB(25, 25, 45)
+speedRow.BackgroundTransparency = 0.2
+speedRow.BorderSizePixel = 0
+speedRow.Parent = scrollFrame
+
+local speedRowCorner = Instance.new("UICorner")
+speedRowCorner.CornerRadius = UDim.new(0, 10 * UI_SCALE)
+speedRowCorner.Parent = speedRow
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0.4, 0, 1, 0)
+speedLabel.Position = UDim2.new(0, 12 * UI_SCALE, 0, 0)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "⚡ Speed:"
+speedLabel.TextColor3 = Color3.fromRGB(255, 215, 100)
+speedLabel.TextScaled = true
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedRow
+
+local speedInput = Instance.new("TextBox")
+speedInput.Size = UDim2.new(0, 85 * UI_SCALE, 0, 28 * UI_SCALE)
+speedInput.Position = UDim2.new(1, -100 * UI_SCALE, 0, 6 * UI_SCALE)
+speedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+speedInput.BackgroundTransparency = 0.2
+speedInput.BorderSizePixel = 0
+speedInput.Text = tostring(CONFIG.BoostedSpeed)
+speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedInput.TextScaled = true
+speedInput.Font = Enum.Font.GothamBold
+speedInput.PlaceholderText = "Speed"
+speedInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+speedInput.ClearTextOnFocus = false
+speedInput.Parent = speedRow
+
+local speedInputCorner = Instance.new("UICorner")
+speedInputCorner.CornerRadius = UDim.new(0, 8 * UI_SCALE)
+speedInputCorner.Parent = speedInput
+
+local speedGlow = Instance.new("UIStroke")
+speedGlow.Color = Color3.fromRGB(255, 100, 100)
+speedGlow.Thickness = 1
+speedGlow.Transparency = 0.5
+speedGlow.Parent = speedInput
+
+speedInput.FocusLost:Connect(function()
+    local value = tonumber(speedInput.Text)
+    if value and value > 0 and value <= 500 then
+        CONFIG.BoostedSpeed = value
+        print("⚡ Speed set to: " .. value)
+    else
+        speedInput.Text = tostring(CONFIG.BoostedSpeed)
+    end
+end)
+
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
 end)
 
+-- ============================================================
+-- FLOATING "F" BUTTON
+-- ============================================================
 local floatingBtn = Instance.new("TextButton")
 floatingBtn.Size = UDim2.new(0, 60 * UI_SCALE, 0, 60 * UI_SCALE)
 floatingBtn.Position = UDim2.new(0, 20 * UI_SCALE, 1, -90 * UI_SCALE)
@@ -587,14 +660,17 @@ floatingBtn.TextScaled = true
 floatingBtn.Font = Enum.Font.GothamBlack
 floatingBtn.Visible = false
 floatingBtn.Parent = screenGui
+
 local floatCorner = Instance.new("UICorner")
 floatCorner.CornerRadius = UDim.new(1, 0)
 floatCorner.Parent = floatingBtn
+
 local floatGlow = Instance.new("UIStroke")
 floatGlow.Color = Color3.fromRGB(255, 255, 255)
 floatGlow.Thickness = 2
 floatGlow.Transparency = 0.4
 floatGlow.Parent = floatingBtn
+
 local floatPulse = 0
 runService.Heartbeat:Connect(function(dt)
     if floatingBtn.Visible then
@@ -665,8 +741,8 @@ minimizeBtn.MouseButton1Click:Connect(function()
     shrink:Play()
     shrink.Completed:Connect(function()
         auraFrame.Visible = false
-        auraFrame.Size = UDim2.new(0, 360 * UI_SCALE, 0, 500 * UI_SCALE)
-        auraFrame.Position = UDim2.new(0.5, -180 * UI_SCALE, 0.5, -250 * UI_SCALE)
+        auraFrame.Size = UDim2.new(0, 340 * UI_SCALE, 0, 460 * UI_SCALE)
+        auraFrame.Position = UDim2.new(0, 10, 0, 10)
         floatingBtn.Visible = true
     end)
 end)
@@ -685,10 +761,10 @@ floatingBtn.MouseButton1Click:Connect(function()
         floatingBtn.Visible = false
         auraFrame.Visible = true
         auraFrame.Size = UDim2.new(0, 0, 0, 0)
-        auraFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        auraFrame.Position = UDim2.new(0, 10, 0, 10)
         local grow = tweenService:Create(auraFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
-            Size = UDim2.new(0, 360 * UI_SCALE, 0, 500 * UI_SCALE),
-            Position = UDim2.new(0.5, -180 * UI_SCALE, 0.5, -250 * UI_SCALE)
+            Size = UDim2.new(0, 340 * UI_SCALE, 0, 460 * UI_SCALE),
+            Position = UDim2.new(0, 10, 0, 10)
         })
         grow:Play()
     end
@@ -734,8 +810,7 @@ player.CharacterAdded:Connect(function(char)
 end)
 
 -- ============================================================
--- INITIALIZE
--- ============================================================
+-- INITIALIZE-- ============================================================
 detectRole()
 findMurderer()
 getPing()
@@ -748,3 +823,4 @@ print("🔫 Auto Get Gun: ON")
 print("⚡ Speed Bypass: " .. CONFIG.BoostedSpeed)
 print("📏 Hitbox Expander: " .. CONFIG.HitboxMultiplier .. "x")
 print("📱 Tap anywhere to fire. Use UI to toggle features.")
+
