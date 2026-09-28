@@ -33,7 +33,10 @@ local CONFIG = {
 		{Icon = "😈", Name = "Troll"},
 	},
 
-	Size = Vector2.new(900, 550),
+	Size = Vector2.new(
+	math.min(900, workspace.CurrentCamera.ViewportSize.X - 40),
+	math.min(550, workspace.CurrentCamera.ViewportSize.Y - 80)
+),
 
 	Background = Color3.fromRGB(7, 9, 20),
 	Panel = Color3.fromRGB(11, 15, 32),
